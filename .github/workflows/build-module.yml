@@ -191,9 +191,3 @@ jobs:
           
           echo "Built packages:"
           ls -la awgrelease/
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: awgrelease/*.?pk
-          tag_name: v${{ matrix.build_env.tag }}
