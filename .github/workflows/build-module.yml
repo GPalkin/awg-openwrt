@@ -86,17 +86,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y python3-pyelftools
 
-      - name: Cache OpenWrt SDK
-        id: cache-sdk
-        uses: actions/cache@v4
-        env:
-          cache-name: "cache-sdk-${{ matrix.build_env.tag }}-${{ matrix.build_env.target}}-${{ matrix.build_env.subtarget}}"
-        with:
-          path: openwrt-sdk-*/
-          key: ${{ runner.os }}-sdk-${{ env.cache-name }}
+
 
       - name: Download and extract OpenWrt SDK
-        if: steps.cache-sdk.outputs.cache-hit != 'true'
         run: |
           echo "pkgarch: ${{ matrix.build_env.pkgarch}}, target:${{ matrix.build_env.target}}, subtarget: ${{ matrix.build_env.subtarget}}"
 
