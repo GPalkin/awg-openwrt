@@ -1,14 +1,33 @@
 include $(TOPDIR)/rules.mk
 
-LUCI_TITLE:=Support for AmneziaWG VPN
-LUCI_DESCRIPTION:=Provides support and Web UI for AmneziaWG VPN
-PKG_VERSION:=2.0.4
-LUCI_DEPENDS:=+amneziawg-tools +ucode +luci-lib-uqr +resolveip
-LUCI_PKGARCH:=all
-PKGARCH:=all
+PKG_NAME:=luci-proto-amneziawg
+PKG_VERSION:=1.0.0
+PKG_RELEASE:=1
 
 PKG_LICENSE:=Apache-2.0
+PKG_MAINTAINER:=GPalkin
 
-include $(TOPDIR)/feeds/luci/luci.mk
+include $(INCLUDE_DIR)/package.mk
 
-# call BuildPackage - OpenWrt buildroot signature
+define Package/luci-proto-amneziawg
+  SECTION:=luci
+  CATEGORY:=LuCI
+  SUBMENU:=Protocols
+  TITLE:=LuCI protocol support for AmneziaWG
+  DEPENDS:=+luci-base +amneziawg-tools
+  PKGARCH:=all
+endef
+
+define Package/luci-proto-amneziawg/description
+  Minimal LuCI protocol support for AmneziaWG interfaces.
+endef
+
+define Build/Compile
+endef
+
+define Package/luci-proto-amneziawg/install
+	$(INSTALL_DIR) $(1)/www/luci-static/resources/protocol
+	$(INSTALL_DATA) ./files/amneziawg.js $(1)/www/luci-static/resources/protocol/amneziawg.js
+endef
+
+$(eval $(call BuildPackage,luci-proto-amneziawg))
