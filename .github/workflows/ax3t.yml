@@ -84,6 +84,7 @@ jobs:
           make package/kmod-amneziawg/compile V=s || true
           make package/amneziawg/compile V=s || true
           make package/luci-app-amneziawg/compile V=s || true
+          make package/feeds/awg/luci-proto-amneziawg/compile V=s || true
 
       - name: Collect IPK packages
         run: |
@@ -94,8 +95,11 @@ jobs:
 
           find /tmp/openwrt-sdk/bin/packages -name "*amnezia*.ipk" -exec cp -v {} "$GITHUB_WORKSPACE/artifacts/" \; || true
           find /tmp/openwrt-sdk/bin/packages -name "*awg*.ipk" -exec cp -v {} "$GITHUB_WORKSPACE/artifacts/" \; || true
+          find /tmp/openwrt-sdk/bin/packages -name "*luci-proto-amneziawg*.ipk" -exec cp -v {} "$GITHUB_WORKSPACE/artifacts/" \; || true
+
           find /tmp/openwrt-sdk/bin/targets -name "*amnezia*.ipk" -exec cp -v {} "$GITHUB_WORKSPACE/artifacts/" \; || true
           find /tmp/openwrt-sdk/bin/targets -name "*awg*.ipk" -exec cp -v {} "$GITHUB_WORKSPACE/artifacts/" \; || true
+          find /tmp/openwrt-sdk/bin/targets -name "*luci-proto-amneziawg*.ipk" -exec cp -v {} "$GITHUB_WORKSPACE/artifacts/" \; || true
 
           echo "Collected files:"
           ls -lah "$GITHUB_WORKSPACE/artifacts"
