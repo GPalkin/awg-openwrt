@@ -13,10 +13,6 @@ jobs:
     runs-on: ubuntu-22.04
 
     env:
-      OPENWRT_VERSION: 24.10.6
-      OPENWRT_TARGET: mediatek
-      OPENWRT_SUBTARGET: filogic
-      OPENWRT_ARCH: aarch64_cortex-a53
       SDK_URL: https://downloads.openwrt.org/releases/24.10.6/targets/mediatek/filogic/openwrt-sdk-24.10.6-mediatek-filogic_gcc-13.3.0_musl.Linux-x86_64.tar.zst
 
     steps:
@@ -27,30 +23,11 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
-            build-essential \
-            clang \
-            flex \
-            bison \
-            g++ \
-            gawk \
-            gcc-multilib \
-            g++-multilib \
-            gettext \
-            git \
-            libncurses5-dev \
-            libssl-dev \
-            python3 \
-            python3-distutils \
-            python3-setuptools \
-            rsync \
-            unzip \
-            zlib1g-dev \
-            file \
-            wget \
-            curl \
-            ccache \
-            jq \
-            zstd
+            build-essential clang flex bison g++ gawk \
+            gcc-multilib g++-multilib gettext git \
+            libncurses5-dev libssl-dev python3 python3-distutils \
+            python3-setuptools rsync unzip zlib1g-dev file \
+            wget curl ccache jq zstd
 
       - name: Download OpenWrt SDK
         run: |
@@ -59,12 +36,20 @@ jobs:
           wget -O sdk.tar.zst "$SDK_URL"
           tar --use-compress-program=unzstd -xf sdk.tar.zst --strip-components=1
 
-      - name: Register current repository as OpenWrt feed
+      - name: Register feeds and local packages
         run: |
           cd /tmp/openwrt-sdk
+
           echo "src-link awg $GITHUB_WORKSPACE" >> feeds.conf.default
           ./scripts/feeds update -a
           ./scripts/feeds install -a
+
+          rm -rf package/luci-proto-amneziawg
+          ln -s "$GITHUB_WORKSPACE/luci-proto-amneziawg" package/luci-proto-amneziawg
+
+          echo "Checking local package:"
+          test -f package/luci-proto-amneziawg/Makefile
+          test -f package/luci-proto-amneziawg/files/amneziawg.js
 
       - name: Show available AmneziaWG packages
         run: |
@@ -84,7 +69,7 @@ jobs:
           make package/kmod-amneziawg/compile V=s || true
           make package/amneziawg/compile V=s || true
           make package/luci-app-amneziawg/compile V=s || true
-          make package/feeds/awg/luci-proto-amneziawg/compile V=s || true
+          make package/luci-proto-amneziawg/compile V=s
 
       - name: Collect IPK packages
         run: |
@@ -104,6 +89,7 @@ jobs:
           echo "Collected files:"
           ls -lah "$GITHUB_WORKSPACE/artifacts"
 
+          test -f "$GITHUB_WORKSPACE/artifacts/ipk-list.txt"
           test -n "$(find "$GITHUB_WORKSPACE/artifacts" -name "*.ipk" -print -quit)"
 
       - name: Upload packages
